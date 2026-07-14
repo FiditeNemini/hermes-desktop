@@ -22,6 +22,14 @@ Every OAuth WebSocket attempt receives a new single-use ticket immediately befor
 
 [[src/main/dashboard.ts#freshDashboardWebSocketUrl]] calls [[src/main/remote-oauth.ts#mintRemoteOAuthWsTicket]] for OAuth connections. Readiness probing consumes its own ticket; renderer reconnects request another through bounded IPC.
 
+Direct HTTP Remote dashboards use `ws:` after ticket minting, so both packaged CSP layers allow that scheme while authentication remains in the single-use ticket.
+
+## Session data routing
+
+Remote session history uses the same selected authentication transport as management APIs.
+
+[[src/main/remote-sessions.ts#remoteRequestJson]] routes direct OAuth session lists, search, messages, media, titles, and deletion through the persistent cookie partition. Token and SSH session requests retain the session-token header.
+
 ## Failure behavior
 
 Missing or expired OAuth sessions stop Remote chat and request browser sign-in without falling back to local state or legacy `/v1`.

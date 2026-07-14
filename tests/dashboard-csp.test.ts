@@ -38,6 +38,11 @@ describe("dashboard Content Security Policy", () => {
     }
   });
 
+  it("allows ticket-authenticated WebSockets to direct HTTP Remote dashboards", () => {
+    expect(mainSrc).toMatch(/connect-src[^;]*(?:^|\s)ws:(?:\s|;)/);
+    expect(rendererIndexHtml).toMatch(/connect-src[^;]*(?:^|\s)ws:(?:\s|;)/);
+  });
+
   it("keeps packaged file-backed startup assets allowed in both CSP policies", () => {
     for (const source of packagedAssetSources) {
       expect(mainSrc).toContain(source);
