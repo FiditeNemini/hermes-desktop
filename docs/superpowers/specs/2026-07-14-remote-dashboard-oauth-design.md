@@ -42,6 +42,8 @@ Settings sends a candidate remote URL to the main process for authentication-mod
 
 For token gateways, existing behavior continues: authenticated REST requests use `X-Hermes-Session-Token`, and the dashboard WebSocket uses `?token=`.
 
+When a gateway resolves to OAuth, any previously stored Remote API key becomes inactive. Shared main-process request headers must not attach it, even though the value remains saved for a future return to token mode.
+
 For OAuth gateways:
 
 1. Settings requests interactive sign-in.
@@ -138,6 +140,8 @@ Login content runs with `nodeIntegration: false`, `contextIsolation: true`, `san
 Ticket minting accepts only normalized HTTP(S) gateway URLs. `wss:` targets may reach the renderer, but non-loopback `ws:` targets are confined to a capability-protected, one-shot loopback relay owned by the main process.
 
 Both the response-header CSP and packaged renderer meta CSP omit the wildcard `ws:` source. They permit only the existing loopback WebSocket sources needed for local, SSH-tunneled, and relayed connections.
+
+OAuth selection also suppresses stored Remote bearer headers across the shared main-process API path. This prevents fallback and auxiliary requests from crossing principals with a stale token.
 
 ## Acceptance criteria
 

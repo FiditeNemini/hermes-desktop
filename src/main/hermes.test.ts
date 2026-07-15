@@ -59,6 +59,7 @@ import {
 import type { ConnectionConfig } from "./config";
 import { providerListSafe } from "./secrets";
 import {
+  getRemoteAuthHeader,
   sendMessage,
   shouldForceCliForSessionOverride,
   stopHealthPolling,
@@ -94,6 +95,34 @@ function testConnection(
     ...fields,
   };
 }
+
+describe("remote authentication headers", () => {
+  // @lat: [[remote-dashboard-oauth#Test specifications#OAuth bearer suppression]]
+  it("does not reuse a stored token after the remote resolves to OAuth", () => {
+    mockedGetConnectionConfig.mockReturnValue(
+      testConnection({
+        mode: "remote",
+        remoteUrl: "https://hermes.example",
+        apiKey: "stale-token",
+        remoteAuthMode: "oauth",
+      }),
+    );
+
+    expect(getRemoteAuthHeader()).toEqual({});
+
+    mockedGetConnectionConfig.mockReturnValue(
+      testConnection({
+        mode: "remote",
+        remoteUrl: "https://hermes.example",
+        apiKey: "current-token",
+        remoteAuthMode: "token",
+      }),
+    );
+    expect(getRemoteAuthHeader()).toEqual({
+      Authorization: "Bearer current-token",
+    });
+  });
+});
 
 describe("transcribeAudio API route", () => {
   const fetchMock = vi.fn();

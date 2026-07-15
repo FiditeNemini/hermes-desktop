@@ -20,6 +20,8 @@ OAuth cookies live only in a dedicated persistent Electron session owned by main
 
 After the browser flow returns, [[src/main/remote-oauth.ts#connectionConfigAfterRemoteOAuthLogin]] re-reads the current configuration. It commits OAuth mode only when Remote mode and the normalized gateway URL still match, preserving newer settings.
 
+[[src/main/hermes.ts#getRemoteAuthHeader]] suppresses stored Remote bearer keys whenever OAuth is selected. The key may remain saved for later token mode, but OAuth chat and auxiliary requests cannot reuse it.
+
 ## WebSocket ticket lifecycle
 
 Every OAuth WebSocket attempt receives a new single-use ticket immediately before connection.
@@ -71,3 +73,7 @@ OAuth login preserves settings changed while the browser is open and rejects com
 ### Loopback WebSocket confinement
 
 Insecure remote WebSockets use a one-shot loopback relay with an unguessable path, while renderer CSP excludes the wildcard `ws:` source.
+
+### OAuth bearer suppression
+
+Once a Remote connection resolves to OAuth, shared request headers omit any stored token while token and SSH authentication remain unchanged.

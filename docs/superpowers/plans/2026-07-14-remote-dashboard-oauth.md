@@ -249,10 +249,12 @@ Stage only intended files and commit with `feat: support OAuth remote dashboards
 - Modify: `src/main/dashboard.ts`
 - Modify: `src/main/ws.d.ts`
 - Modify: `src/main/app/start.ts`
+- Modify: `src/main/hermes.ts`
 - Modify: `src/renderer/index.html`
 - Modify: `tests/remote-oauth.test.ts`
 - Create: `tests/dashboard-websocket-relay.test.ts`
 - Modify: `tests/dashboard-csp.test.ts`
+- Modify: `src/main/hermes.test.ts`
 - Modify: `lat.md/remote-dashboard-oauth.md`
 
 **Interfaces:**
@@ -262,7 +264,7 @@ Stage only intended files and commit with `feat: support OAuth remote dashboards
 
 - [ ] **Step 1: Add failing config-race and CSP/relay tests**
 
-Prove login completion preserves current settings, rejects a changed gateway or mode, forwards one WebSocket through loopback, rejects an invalid capability, and removes wildcard `ws:` from both CSP layers.
+Prove login completion preserves current settings, rejects a changed gateway or mode, suppresses stale bearer headers in OAuth mode, forwards one WebSocket through loopback, rejects an invalid capability, and removes wildcard `ws:` from both CSP layers.
 
 - [ ] **Step 2: Verify RED**
 
@@ -270,7 +272,7 @@ Run focused Vitest files. Expected: missing helper/relay exports and wildcard CS
 
 - [ ] **Step 3: Implement config revalidation and loopback relay**
 
-Re-read connection configuration after interactive login. Proxy only non-loopback `ws:` targets; wait for the target handshake before accepting the renderer connection, then bridge frames and close the listener.
+Re-read connection configuration after interactive login. Suppress stored bearer keys while OAuth is active. Proxy only non-loopback `ws:` targets; wait for the target handshake before accepting the renderer connection, then bridge frames and close the listener.
 
 - [ ] **Step 4: Verify focused behavior and security invariants**
 
